@@ -1,6 +1,10 @@
-import { authValidationSchema } from "../constant/auth.js";
+import {
+  authValidationSchema,
+  generateToken,
+  loginValidationSchema,
+} from "../constant/auth.js";
 import { Auth } from "../models/seller.auth.model.js";
-import { genSalt, hash } from "bcrypt";
+import { compare, genSalt, hash } from "bcrypt";
 
 export const createSellerAccount = async (req, res) => {
   try {
@@ -24,5 +28,29 @@ export const createSellerAccount = async (req, res) => {
     return seller
       ? res.status(201).json({ _id: seller._id })
       : res.status(400).send("Invalid Parameters");
+  } catch (error) {}
+};
+
+export const sellerLogin = async (req, res) => {
+  try {
+    const { error } = loginValidationSchema.validate(req.body);
+    if (error)
+      return res.status(400).json({ message: error.details[0].message });
+    const { email, password } = req.body;
+    const seller = await Auth.findOne({ email });
+    if (seller) {
+      if (await compare(password, seller?.password)) {
+        return res.status(200).json({
+          id: seller?._id,
+          firstName: seller.firstName,
+          lastName: seller.lastName,
+          email: seller?.email,
+          mobileNumber: seller?.mobileNumber,
+          isEmailVerified: seller.isEmailVerified,
+          passcode: generateToken(seller._id),
+        });
+      } else res.status(400).json({ message: "Wrong password" });
+    } else
+      return res.status(400).send({ message: "Email not registered with us" });
   } catch (error) {}
 };
