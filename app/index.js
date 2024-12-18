@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { initializeDBConnection } from "./config/db.js";
 import authRoute from "./routes/auth.routes.js";
+import { SELLER_AUTH_ROUTE } from "./constant/routes.js";
 dotenv.config();
 const { PORT, MONGO_URI } = process.env;
 
@@ -24,7 +25,7 @@ const startSever = () => {
     validateENVs();
     initializeDBConnection(MONGO_URI);
     app.use(express.json());
-    app.use("/auth", authRoute);
+    app.use(SELLER_AUTH_ROUTE, authRoute);
     app.listen(PORT || 4000, (err) => {
       if (err) console.error(err);
       else console.log(`server successfully running at:${PORT}`);
