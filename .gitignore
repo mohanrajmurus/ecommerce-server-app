@@ -12,7 +12,6 @@ client
 dist
 dist-ssr
 *.local
-.env
 
 # Editor directories and files
 .vscode/*
@@ -25,3 +24,4 @@ dist-ssr
 *.sln
 *.sw?
 *.txt
+.codesandbox
